@@ -1,0 +1,58 @@
+
+trigger: none
+
+parameters:
+  - name: name
+    displayName: 'SP Display Name'
+    type: string
+    default: 'my-spn'
+  - name: role
+    displayName: 'Azure Role'
+    type: string
+    default: 'Contributor'
+    values:
+      - Owner
+      - Contributor
+      - Reader
+      - 'User Access Administrator'
+  - name: scope
+    displayName: 'Role Assignment Scope'
+    type: string
+    default: '/subscriptions/<SUBSCRIPTION-ID>'
+  - name: keyVaultName
+    displayName: 'Key Vault Name'
+    type: string
+    default: 'MyKeyVault'
+  - name: secretName
+    displayName: 'Secret Name in Key Vault'
+    type: string
+    default: '${{ parameters.name }}-sp-secret'
+pool:
+  name: 'az-pool-set1'
+
+variables:
+   name: serviceConnection
+   value: scn-azure
+
+stages:
+- stage: CreateSP
+  displayName: Create Service Principal
+  jobs:
+  - job: RunCreateSP
+    displayName: Create SP Job
+    steps:
+      - task: AzurePowerShell@5
+        displayName: 'Create AAD Service Principal'
+        inputs:
+          azureSubscription: $(serviceConnection)
+          ScriptPath: '$(Build.SourcesDirectory)/scripts/Create-ServicePrincipal-Azure.ps1'
+          ScriptArguments: >
+            -Name         "${{ parameters.name }}"
+            -Role         "${{ parameters.role }}"
+            -Scope        "${{ parameters.scope }}"
+            -KeyVaultName "${{ parameters.keyVaultName }}"
+            -SecretName   "${{ parameters.secretName }}"
+          pwsh: true
+          azurePowerShellVersion: 'LatestVersion'
+          failOnStandardError: true
+          pwsh: true
