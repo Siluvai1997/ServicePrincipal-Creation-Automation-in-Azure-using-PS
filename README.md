@@ -1,4 +1,5 @@
-create a service principal in Azure cloud using PowerShell script and azure devops pipeline.
+## Provision a new service principal in Azure cloud using PowerShell script and azure devops pipeline.
+
 Prerequisites:
 - Ensure you have an access to Azure Cloud
 - create a Service connection for the pipeline to authenticate to Azure Cloud
